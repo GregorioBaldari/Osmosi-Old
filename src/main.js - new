@@ -39,14 +39,9 @@ var vm  = new Vue({
     scale:{},
     audioContext:null,
     instrument: synth1,
-    noOfJoint:2, //Change this to 24 when considering all the joints
-    scale: ['c','d','e','g','a'],  //majorPentatonic
-    openess: 0,
-    user: null,
-    userX:0,
-    userY:0,
-    note: 'c3',
-    handsMultipleFactor:1
+    noOfJoint:24,
+    scale: ['C','D','E','G','A'],  //majorPentatonic
+    openess: 0
   },
   mounted(){
    var vm = this
@@ -74,7 +69,6 @@ var vm  = new Vue({
       },
       //Draw the scheleton and sound the sound if isPlaying is TRUE.
       draw: function () {
-
         //console.log('Let's draw!!');
         vm.ctx.clearRect(0, 0, canvas.width, canvas.height);
         var index = 0;
@@ -90,13 +84,8 @@ var vm  = new Vue({
                  var joint = body.joints[jointType];
                  vm.ctx.fillStyle = colors[index];
                  vm.ctx.fillRect(joint.depthX * 512, joint.depthY * 424, 10, 10);
-                 // if(jointType == '7' || jointType == '11'){
-                 //   centerBodyX += vm.handsMultipleFactor*joint.depthX*canvas.width;
-                 //   centerBodyY += vm.handsMultipleFactor*joint.depthY*canvas.height;
-                 // } else {
-                   centerBodyX += joint.depthX*canvas.width;
-                   centerBodyY += joint.depthY*canvas.height;
-                 // }
+                 centerBodyX += joint.depthX*canvas.width;
+                 centerBodyY += joint.depthY*canvas.height;
              }
              vm.ctx.fillStyle = colors[index];
              vm.ctx.fillRect((centerBodyX/vm.noOfJoint), (centerBodyY/vm.noOfJoint) , 30, 30);
@@ -104,9 +93,6 @@ var vm  = new Vue({
                if(vm.instrument != 'guitar'){
                  vm.playSound(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
                } else {
-                 vm.user = body;
-                 vm.userX = centerBodyX/vm.noOfJoint;
-                 vm.userY = centerBodyY/vm.noOfJoint
                  vm.playSoundGuitar(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
                }
              }
@@ -118,39 +104,36 @@ var vm  = new Vue({
           vm.openess = vm.setOpeness(user, userX, userY);
           console.log(vm.openess);
           vm.audioContext.resume();
-          //var pitch =3;
-
-          var notePitch = '3';
-          var notePlaying = 'C';
+          var pitch =3;
 
           if(vm.openess>120){
-            notePitch = 5
+            pitch = 5
           };
           if(vm.openess<119 &&  vm.openess>100){
-            notePitch = 4
+            pitch = 4
           };
           if(vm.openess<=99 &&  vm.openess>50){
-            notePitch = 3
+            pitch = 3
           };
           if(vm.openess<=49){
-            notePitch = 2
+            pitch = 2
           };
-          var notePlaying = 'A';
+          var note = 'A';
           var Xvalue = userX/canvas.width;
           if( Xvalue > 0.0 && Xvalue < 0.20){
-            notePlaying = vm.scale[0]
+            note = vm.scale[0]
           }
           if( Xvalue > 0.16 && Xvalue < 0.40){
-            notePlaying = vm.scale[1]
+            note = vm.scale[1]
           }
           if( Xvalue > 0.31 && Xvalue < 0.60){
-            notePlaying = vm.scale[2]
+            note = vm.scale[2]
           }
           if(Xvalue > 0.46 && Xvalue < 0.80){
-            notePlaying = vm.scale[3]
+            note = vm.scale[3]
           }
           if(Xvalue > 0.61 && Xvalue < 1){
-            notePlaying = vm.scale[4]
+            note = vm.scale[4]
           }
           // if(Xvalue > 0.76 && Xvalue < 0.90){
           //   note = 'F'
@@ -158,16 +141,9 @@ var vm  = new Vue({
           // if(Xvalue > 0.91 && Xvalue < 1){
           //   note = 'G'
           // }
+          console.log('Note Sound: ' + note + pitch);
 
-
-          var  note = '' + notePlaying + notePitch;
-          console.log('Note Sound: ' + note);
-          if(vm.note != note){
-            vm.note = note;
-            vm.instrument.triggerAttackRelease(vm.note, '8n');
-          }
-
-          //vm.instrument.triggerAttackRelease(note + pitch, '8n');
+          vm.instrument.triggerAttackRelease(note + pitch, '8n');
         },
 
       //Used for guitar samples with SoundJS
@@ -175,44 +151,39 @@ var vm  = new Vue({
         vm.openess = vm.setOpeness(user, userX, userY);
         console.log(vm.openess);
         vm.audioContext.resume();
-        var notePitch;
-        var notePlaying;
+        var pitch =3;
 
-        // if(vm.openess>120){
-        //   pitch = 5
-        // };
+        if(vm.openess>120){
+          pitch = 5
+        };
         if(vm.openess<119 &&  vm.openess>100){
-          notePitch = '5'
+          pitch = 4
         };
         if(vm.openess<=99 &&  vm.openess>50){
-          notePitch = '4'
+          pitch = 3
         };
         if(vm.openess<=49){
-          notePitch = '3'
+          pitch = 2
         };
-
+        var note = 'C';
         var Xvalue = userX/canvas.width;
         if( Xvalue > 0.0 && Xvalue < 0.20){
-          notePlaying = vm.scale[0]
+          note = vm.scale[0]
         }
         if( Xvalue > 0.16 && Xvalue < 0.40){
-          notePlaying = vm.scale[1]
+          note = vm.scale[1]
         }
         if( Xvalue > 0.31 && Xvalue < 0.60){
-          notePlaying = vm.scale[2]
+          note = vm.scale[2]
         }
         if(Xvalue > 0.46 && Xvalue < 0.80){
-          notePlaying = vm.scale[3]
+          note = vm.scale[3]
         }
         if(Xvalue > 0.61 && Xvalue < 1){
-          notePlaying = vm.scale[4]
+          note = vm.scale[4]
         }
-        //createjs.Sound.play('' + note + pitch);
-        var  note = '' + notePlaying + notePitch;
-        if(vm.note != note){
-          vm.note = note;
-          var myinstance = createjs.Sound.play(note);
-        }
+        soundInstance = createjs.Sound.play('g3');
+        //soundInstance = createjs.Sound.play(note+pitch);
       },
 
       setInstrument1: function (){
@@ -242,41 +213,34 @@ var vm  = new Vue({
     		var assetsPath = "/audio/guitar/";
         //scale: ['C','D','E','G','A'],  //majorPentatonic
         var sounds =[
+            {src:"c2_mf_rr3.wav", id:"c2"},
+            {src:"d2_mf_rr3.wav", id:"d2"},
+            {src:"e2_mf_rr3.wav", id:"e2"},
+            {src:"g2_mf_rr3.wav", id:"g2"},
+            {src:"a2_mf_rr3.wav", id:"a2"},
             {src:"c3_mf_rr3.wav", id:"c3"},
-            {src:"c3_mf_rr3.wav", id:"d3"},
-            {src:"eb3_mf_rr3.wav", id:"e3"},
-            {src:"gb3_mf_rr3.wav", id:"g3"},
+            {src:"d3_mf_rr3.wav", id:"d3"},
+            {src:"e3_mf_rr3.wav", id:"e3"},
+            {src:"g3_mf_rr3.wav", id:"g3"},
             {src:"a3_mf_rr3.wav", id:"a3"},
             {src:"c4_mf_rr3.wav", id:"c4"},
-            {src:"c4_mf_rr3.wav", id:"d4"},
-            {src:"eb4_mf_rr3.wav", id:"e4"},
-            {src:"gb4_mf_rr3.wav", id:"g4"},
+            {src:"d4_mf_rr3.wav", id:"d4"},
+            {src:"e4_mf_rr3.wav", id:"e4"},
+            {src:"g4_mf_rr3.wav", id:"g4"},
             {src:"a4_mf_rr3.wav", id:"a4"},
             {src:"c5_mf_rr3.wav", id:"c5"},
-            {src:"eb5_mf_rr3.wav", id:"d5"},
-            {src:"eb5_mf_rr3.wav", id:"e5"},
-            {src:"gb5_mf_rr3.wav", id:"g5"},
+            {src:"d5_mf_rr3.wav", id:"d5"},
+            {src:"e5_mf_rr3.wav", id:"e5"},
+            {src:"g5_mf_rr3.wav", id:"g5"},
             {src:"a5_mf_rr3.wav", id:"a5"},
         ];
         createjs.Sound.alternateExtensions = ["wav"];	// add other extensions to try loading if the src file extension is not supported
-    	  createjs.Sound.addEventListener("fileload", function(event) {
-          vm.readyToPlayGuitar(event)
-        }); // add an event listener for when load is completed
-    	  createjs.Sound.registerSounds(sounds, assetsPath);  // regier sound, which preloads by default
+    	  createjs.Sound.addEventListener("fileload", vm.readyToPlayGuitar()); // add an event listener for when load is completed
+    	  createjs.Sound.registerSounds(sounds, assetsPath);  // register sound, which preloads by default
     	},
       //Event Handler for when the Guitar files mp3 are load...I should manage the evnt let the UI know that the samples are ready.
-
-      setWaterSounds: function () {
-        console.log('Water is coming');
-        createjs.Sound.alternateExtensions = ["wav"];
-        createjs.Sound.addEventListener("fileload", function(event) {
-           var instance = createjs.Sound.play("waterBubble");
-         });
-         createjs.Sound.registerSound("audio/water/waterBubble.wav", "waterBubble");
-      },
-
-      readyToPlayGuitar: function (event) {
-        var myinstance = createjs.Sound.play('' + vm.notePlaying + vm.notePitch);
+      readyToPlayGuitar: function () {
+        //soundInstance = createjs.Sound.play('a3');
         //soundInstance = createjs.Sound.play('a2');
       }
 

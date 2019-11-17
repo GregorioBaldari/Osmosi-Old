@@ -16,6 +16,8 @@ if(kinect.open()) {
     });
 
     app.use("/src", express.static(__dirname + '/src'));
+    app.use("/lib", express.static(__dirname + '/lib'));
+    app.use("/audio", express.static(__dirname + '/audio'));
 
     kinect.on('bodyFrame', sendFrame);
 

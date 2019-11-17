@@ -16,64 +16,62 @@
   <link rel="stylesheet" href="css/styles.css?v=1.0"-->
 
   <!-- Vue -->
-
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
-
 
 </head>
 
 <body>
   <div class="container" id="app">
-    {{message}}
     <div class="row bg-info text-white">
       <h1>OSMOSIS</h1>
     </div>
-    <div class="row">
+    <div class="row mt-3">
       <div class="col-4">
-        <div class="row border mt-1 mr-1" >
-          <div class="row col-12">
+        <div class="row border mt-1 mr-1 mb-3" >
+          <div class="row col-12 ml-1 mt-2">
             <h6>Sound Controller</h6>
           </div>
-          <div class="row col-12">
+          <div class="row col-12 ml-1 mb-3">
             <button v-on:click="startPlaySound" type="button" class="mr-1 btn btn-small btn-outline-dark">Play Sound</button>
             <button v-on:click="stopPlaySound" type="button" class="btn btn-small btn-outline-dark">Stop Sound</button>
           </div>
         </div>
-        <div class="row border mt-1 mr-1">
-          <div class="row col-12">
+        <div class="row border mt-1 mr-1 mb-3">
+          <div class="row col-12 ml-1 mt-2">
             <h6>Sound Type</h6>
           </div>
-          <div class="row col-12">
-            <button v-on:click="playInstrument1 " type="button" class="mr-1 btn btn-small btn-outline-dark">Instrument 1</button>
-            <button v-on:click="playInstrument2" type="button" class="btn btn-small btn-outline-dark">Instrument 2</button>
-
+          <div class="row col-12 ml-1 mb-3">
+            <button v-on:click="setInstrument1 " type="button" class="mr-1 btn btn-small btn-outline-dark">Instrument 1</button>
+            <button v-on:click="setInstrument2" type="button" class="btn btn-small btn-outline-dark">Instrument 2</button>
+            <button v-on:click="setGuitar" type="button" class="btn btn-small btn-outline-dark">Guitar</button>
+            <button v-on:click="setWaterSounds" type="button" class="btn btn-small btn-outline-dark">Water Bubble</button>
           </div>
         </div>
         <div class="row border mt-1 mr-1">
-          <div class="row col-12">
+          <div class="row col-12 ml-1 mt-2">
             <h6>Body Track Controller </h6>
           </div>
-          <div class="row col-12">
-            Body Track Controllers Commands
+          <div class="row col-12 ml-1 mb-3">
+            <input v-model='handsMultipleFactor'></input>
+          </div>
+          <div class="row col-12 ml-1 mb-3">
+            <input class="mr-2 ml-2" type="radio" v-model ="noOfJoint" name="gender" value="2"> Only Hands<br>
+            <input class="mr-2 ml-2" type="radio" v-model ="noOfJoint" name="gender" value="24"> Full Body<br>
           </div>
         </div>
       </div>
-      <div class="col-8 border mt-1">
-        <div class="row col-12"><h6>Body Monitor</h6></div>
-        <span>Distance:{{openess}}</span>
+      <div class="col-8 mt-1">
         <div class="row col-12">
           <!-- <skeletons-monitor></skeletons-monitor> -->
-          <canvas ref="canvas" id="bodyCanvas" width="512" height="424"></canvas>'
+          <canvas class="border ml-1" ref="canvas" id="bodyCanvas" width="512" height="424"></canvas>
         </div>
       </div>
     </div>
-</div>
-
+    </div>
 </body>
 </html>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.0.1/Tone.min.js"></script>
-
+<script src="lib/soundjs.min.js"></script>
 <script src="src/main.js"></script>
