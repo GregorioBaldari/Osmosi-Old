@@ -17,7 +17,8 @@ var synth2 = new Tone.Synth({
 				"release" : 1.5,
 			},
 			"portamento" : 0.05
-		}).toMaster();
+}).toMaster();
+
 socket.on('bodyFrame', function(bodyFrame){
   //console.log('Getting Kinect BodyFrame event in Vue Application');
   vm.bodies = bodyFrame.bodies;
@@ -29,8 +30,8 @@ var colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
 
 var vm  = new Vue({
   el: '#app',
+
   data:{
-    message: 'Hello Vue is ' + tracking,
     tracking: tracking,
     monitorReadyMessage: 'Waitin Body',
     ctx: null,
@@ -74,7 +75,6 @@ var vm  = new Vue({
 
       //Draw the scheleton and sound the sound if isPlaying is TRUE.
       draw: function () {
-
         //console.log('Let's draw!!');
         vm.ctx.clearRect(0, 0, canvas.width, canvas.height);
         var index = 0;
@@ -82,7 +82,6 @@ var vm  = new Vue({
         var centerBodyY= 0;
         this.bodies.forEach(function(body){
           if(body.tracked) {
-
             //console.log('Look, One body is tracked');
             this.tracking = true;
              //playSound(body, play)
@@ -90,13 +89,8 @@ var vm  = new Vue({
                  var joint = body.joints[jointType];
                  vm.ctx.fillStyle = colors[index];
                  vm.ctx.fillRect(joint.depthX * 512, joint.depthY * 424, 10, 10);
-                 // if(jointType == '7' || jointType == '11'){
-                 //   centerBodyX += vm.handsMultipleFactor*joint.depthX*canvas.width;
-                 //   centerBodyY += vm.handsMultipleFactor*joint.depthY*canvas.height;
-                 // } else {
-                   centerBodyX += joint.depthX*canvas.width;
-                   centerBodyY += joint.depthY*canvas.height;
-                 // }
+                 centerBodyX += joint.depthX*canvas.width;
+                 centerBodyY += joint.depthY*canvas.height;
              }
              vm.ctx.fillStyle = colors[index];
              vm.ctx.fillRect((centerBodyX/vm.noOfJoint), (centerBodyY/vm.noOfJoint) , 30, 30);
@@ -161,13 +155,6 @@ var vm  = new Vue({
           if(Xvalue > 0.61 && Xvalue < 1){
             notePlaying = vm.scale[4]
           }
-          // if(Xvalue > 0.76 && Xvalue < 0.90){
-          //   note = 'F'
-          // }
-          // if(Xvalue > 0.91 && Xvalue < 1){
-          //   note = 'G'
-          // }
-
 
           var  note = '' + notePlaying + notePitch;
           console.log('Note Sound: ' + note);
@@ -175,8 +162,6 @@ var vm  = new Vue({
             vm.note = note;
             vm.instrument.triggerAttackRelease(vm.note, '8n');
           }
-
-          //vm.instrument.triggerAttackRelease(note + pitch, '8n');
         },
 
       //Used for guitar samples with SoundJS
@@ -225,29 +210,11 @@ var vm  = new Vue({
       },
 
       playSoundWater: function (user,userX,userY) {
-        //var props = new createjs.PlayPropsConfig().set({interrupt: createjs.Sound.INTERRUPT_ANY, loop: -1})
-        //var instance = createjs.Sound.play("waterBubble", props);
-        //createjs.Sound.registerSound("audio/water/waterBubble.wav", "waterBubble");
-      //  vm.openess = vm.setOpeness(user, userX, userY);
-      //  console.log(vm.openess);
         vm.audioContext.resume();
         var notePitch = '3';
         var notePlaying = 'c';
-
-        // if(vm.openess>120){
-        //   pitch = 5
-        // };
-        // if(vm.openess<119 &&  vm.openess>100){
-        //   notePitch = '5'
-        // };
-        // if(vm.openess<=99 &&  vm.openess>50){
-        //   notePitch = '4'
-        // };
-        // if(vm.openess<=49){
-        //   notePitch = '3'
-        // };
-
         var Xvalue = userX/canvas.width;
+
         if( Xvalue > 0.0 && Xvalue < 0.10){
           notePlaying = vm.scale[0]
         }
@@ -263,7 +230,6 @@ var vm  = new Vue({
         if(Xvalue > 0.51 && Xvalue < 60){
           notePlaying = vm.scale[4]
         }
-
         if( Xvalue > 0.61 && Xvalue < 0.70){
           notePlaying = vm.scale[0]
         }
@@ -277,8 +243,6 @@ var vm  = new Vue({
           notePlaying = vm.scale[3]
         }
 
-
-        //createjs.Sound.play('' + note + pitch);
         var  note = '' + notePlaying + notePitch;
         if(vm.note != note){
           vm.note = note;
