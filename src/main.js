@@ -39,7 +39,7 @@ var vm  = new Vue({
     scale:{},
     audioContext:null,
     instrument: synth1,
-    noOfJoint:2, //Change this to 24 when considering all the joints
+    noOfJoint:24, //Change this to 24 when considering all the joints
     scale: ['c','d','e','g','a'],  //majorPentatonic
     openess: 0,
     user: null,
@@ -70,8 +70,8 @@ var vm  = new Vue({
       stopPlaySound: function () {
         vm.isPlaying = false;
         //console.log('Now Is Playing is FLASE');
-
       },
+
       //Draw the scheleton and sound the sound if isPlaying is TRUE.
       draw: function () {
 
@@ -101,18 +101,27 @@ var vm  = new Vue({
              vm.ctx.fillStyle = colors[index];
              vm.ctx.fillRect((centerBodyX/vm.noOfJoint), (centerBodyY/vm.noOfJoint) , 30, 30);
              if(vm.isPlaying){
-               if(vm.instrument != 'guitar'){
-                 vm.playSound(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
-               } else {
-                 vm.user = body;
-                 vm.userX = centerBodyX/vm.noOfJoint;
-                 vm.userY = centerBodyY/vm.noOfJoint
-                 vm.playSoundGuitar(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
-               }
+               switch(vm.instrument) {
+                case synth1:
+                  vm.playSound(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
+                  break;
+                case synth2:
+                  vm.playSound(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
+                  break;
+                case 'guitar':
+                  vm.user = body;
+                  vm.userX = centerBodyX/vm.noOfJoint;
+                  vm.userY = centerBodyY/vm.noOfJoint
+                  vm.playSoundGuitar(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
+                  break;
+                case 'water':
+                vm.playSoundWater(body,centerBodyX/vm.noOfJoint,centerBodyY/vm.noOfJoint);
+              }
              }
           }
         })
       },
+
       //Used for Synth and Tone'js
       playSound: function (user, userX, userY) {
           vm.openess = vm.setOpeness(user, userX, userY);
@@ -215,12 +224,76 @@ var vm  = new Vue({
         }
       },
 
+      playSoundWater: function (user,userX,userY) {
+        //var props = new createjs.PlayPropsConfig().set({interrupt: createjs.Sound.INTERRUPT_ANY, loop: -1})
+        //var instance = createjs.Sound.play("waterBubble", props);
+        //createjs.Sound.registerSound("audio/water/waterBubble.wav", "waterBubble");
+      //  vm.openess = vm.setOpeness(user, userX, userY);
+      //  console.log(vm.openess);
+        vm.audioContext.resume();
+        var notePitch = '3';
+        var notePlaying = 'c';
+
+        // if(vm.openess>120){
+        //   pitch = 5
+        // };
+        // if(vm.openess<119 &&  vm.openess>100){
+        //   notePitch = '5'
+        // };
+        // if(vm.openess<=99 &&  vm.openess>50){
+        //   notePitch = '4'
+        // };
+        // if(vm.openess<=49){
+        //   notePitch = '3'
+        // };
+
+        var Xvalue = userX/canvas.width;
+        if( Xvalue > 0.0 && Xvalue < 0.10){
+          notePlaying = vm.scale[0]
+        }
+        if( Xvalue > 0.11 && Xvalue < 0.20){
+          notePlaying = vm.scale[1]
+        }
+        if( Xvalue > 0.21 && Xvalue < 0.30){
+          notePlaying = vm.scale[2]
+        }
+        if(Xvalue > 0.31 && Xvalue < 0.40){
+          notePlaying = vm.scale[3]
+        }
+        if(Xvalue > 0.51 && Xvalue < 60){
+          notePlaying = vm.scale[4]
+        }
+
+        if( Xvalue > 0.61 && Xvalue < 0.70){
+          notePlaying = vm.scale[0]
+        }
+        if( Xvalue > 0.71 && Xvalue < 0.80){
+          notePlaying = vm.scale[1]
+        }
+        if( Xvalue > 0.81 && Xvalue < 0.90){
+          notePlaying = vm.scale[2]
+        }
+        if(Xvalue > 0.91 && Xvalue < 100){
+          notePlaying = vm.scale[3]
+        }
+
+
+        //createjs.Sound.play('' + note + pitch);
+        var  note = '' + notePlaying + notePitch;
+        if(vm.note != note){
+          vm.note = note;
+          var myinstance = createjs.Sound.play(note);
+        }
+      },
+
       setInstrument1: function (){
         vm.instrument = synth1
       },
+
       setInstrument2: function (){
         vm.instrument = synth2
       },
+
       calculateNote: function (user,userCenterX,userCenterY) {
 
       },
@@ -267,18 +340,35 @@ var vm  = new Vue({
       //Event Handler for when the Guitar files mp3 are load...I should manage the evnt let the UI know that the samples are ready.
 
       setWaterSounds: function () {
+        vm.instrument = 'water';
         console.log('Water is coming');
-        createjs.Sound.alternateExtensions = ["wav"];
+
+        var assetsPath = "/audio/water/";
+        //scale: ['C','D','E','G','A'],  //majorPentatonic
+        var sounds =[
+            {src:"waterBubbleS1.wav", id:"c3"},
+            {src:"waterBubbleS2.wav", id:"d3"},
+            {src:"waterBubbleS3.wav", id:"e3"},
+            {src:"waterBubbleS4.wav", id:"g3"},
+            {src:"waterBubbleS1.wav", id:"a3"},
+        ];
+        createjs.Sound.alternateExtensions = ["wav"];	// add other extensions to try loading if the src file extension is not supported
         createjs.Sound.addEventListener("fileload", function(event) {
-           var instance = createjs.Sound.play("waterBubble");
-         });
-         createjs.Sound.registerSound("audio/water/waterBubble.wav", "waterBubble");
+          //vm.readyToPlayGuitar(event)
+        }); // add an event listener for when load is completed
+        createjs.Sound.registerSounds(sounds, assetsPath);  // regier sound, which preloads by default
+
+        // createjs.Sound.alternateExtensions = ["wav"];
+        // createjs.Sound.addEventListener("fileload", function(event) {
+        //    var instance = createjs.Sound.play("waterBubble");
+        //  });
+        //  createjs.Sound.registerSound("audio/water/waterBubble.wav", "waterBubble",3);
       },
 
       readyToPlayGuitar: function (event) {
         var myinstance = createjs.Sound.play('' + vm.notePlaying + vm.notePitch);
         //soundInstance = createjs.Sound.play('a2');
-      }
+      },
 
   }
 });
